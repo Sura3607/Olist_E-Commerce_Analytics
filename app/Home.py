@@ -36,6 +36,34 @@ def load_cube() -> pd.DataFrame:
     return pd.read_csv(path)
 
 
+def list_model_files() -> list[str]:
+    """Return available .pkl model filenames in the models directory."""
+    if not MODELS_DIR.exists():
+        return []
+    return sorted([p.name for p in MODELS_DIR.glob("*.pkl")])
+
+
+def list_model_options(filenames: list[str]) -> tuple[list[str], dict]:
+    """Return display labels and a mapping label->filename for given model filenames."""
+    labels: list[str] = []
+    mapping: dict = {}
+    for fn in filenames:
+        key = fn.rsplit(".", 1)[0]
+        if key == "bad_review_classifier":
+            label = "Current classifier"
+        elif key == "logistic_regression":
+            label = "Logistic Regression"
+        elif key == "random_forest":
+            label = "Random Forest"
+        elif key == "hist_gradient_boosting":
+            label = "HistGradientBoosting"
+        else:
+            label = key.replace("_", " ").title()
+        labels.append(label)
+        mapping[label] = fn
+    return labels, mapping
+
+
 def sidebar_filters(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         return df
@@ -125,9 +153,9 @@ def cube_tab() -> None:
     st.dataframe(shown.sort_values(sort_col, ascending=False).head(200), use_container_width=True)
 
 
-def prediction_tab(df: pd.DataFrame) -> None:
-    model_path = MODELS_DIR / "bad_review_classifier.pkl"
-    if not model_path.exists():
+def prediction_tab(df: pd.DataFrame, selected_model_file: str) -> None:
+    model_path = MODELS_DIR / selected_model_file if selected_model_file else None
+    if not model_path or not model_path.exists():
         st.warning("No trained model found. Run `python scripts/train_bad_review_model.py` first.")
         return
 
@@ -159,7 +187,7 @@ def prediction_tab(df: pd.DataFrame) -> None:
     row["freight_ratio"] = row["total_freight"] / row["total_price"] if row["total_price"] else 0
 
     if st.button("Predict bad review risk"):
-        result = predict(load_model(), pd.DataFrame([row])).iloc[0]
+        result = predict(load_model(model_path), pd.DataFrame([row])).iloc[0]
         st.metric("Bad review probability", f"{result['bad_review_probability']:.1%}")
         st.write("Prediction:", "Bad review risk" if result["bad_review_prediction"] == 1 else "Low risk")
 
@@ -171,7 +199,15 @@ def main() -> None:
         st.info("Run `python scripts/build_processed.py` to create processed data before using the dashboard.")
         return
 
+    # Sidebar: filters and model selection
     filtered = sidebar_filters(df)
+    model_files = list_model_files()
+    model_labels, label_to_file = list_model_options(model_files) if model_files else ([], {})
+    default_idx = 0
+    if model_files and "bad_review_classifier.pkl" in model_files:
+        default_idx = model_files.index("bad_review_classifier.pkl")
+    selected_label = st.sidebar.selectbox("Model", model_labels, index=default_idx) if model_labels else None
+    selected_model_file = label_to_file[selected_label] if selected_label else None
     tab_overview, tab_eda, tab_cube, tab_predict = st.tabs(["Overview", "EDA", "Iceberg Cube", "Prediction"])
     with tab_overview:
         overview_tab(filtered)
@@ -180,7 +216,7 @@ def main() -> None:
     with tab_cube:
         cube_tab()
     with tab_predict:
-        prediction_tab(df)
+        prediction_tab(df, selected_model_file)
 
 
 if __name__ == "__main__":
