@@ -14,7 +14,16 @@ Mục tiêu đồ án:
 - Huấn luyện mô hình classification dự đoán đơn hàng có khả năng nhận review xấu.
 - Triển khai API và ứng dụng Streamlit dashboard.
 
-## 2. Dataset
+## 2. Thành viên
+
+| STT | Họ và Tên | Lớp | MSSV | GitHub | Công việc | Tiến độ |
+| :--: | :-- | :--: | :--: | :-- | :-- | :--: |
+| 1 | Trần Viết Gia Huy | CS0001 | 31231027056 | [@Tommyhuy1705](https://github.com/Tommyhuy1705) | - Tiền xử lý & Feature Engineering<br>- Thiết kế Lược đồ DWH (Star Schema)<br>- Viết script ETL & Load data<br>- Báo cáo luận<br>- Slide | 100% |
+| 2 | Nguyễn Minh Nhựt | CS0001 | 31231022656 | [@Sura3607](https://github.com/Sura3607) | - Tính toán Iceberg Cube<br>- Huấn luyện Baseline Model<br>- Báo cáo luận<br>- Slide | 100% |
+| 3 | Nguyễn Trọng Hưởng | CS0001 | 31231023691 | [@trongjhuongwr](https://github.com/trongjhuongwr) | - Tối ưu hóa mô hình<br>- Đóng gói mô hình (API)<br>- Báo cáo luận<br>- Slide | 100% |
+| 4 | Tô Xuân Đông | CS0001 | 31231025345 | [@xuandongg1801](https://github.com/xuandongg1801) | - Khám phá dữ liệu (EDA)<br>- Làm website<br>- Báo cáo luận<br>- Slide | 100% |
+
+## 3. Dataset
 
 Đặt 9 file CSV của Olist trong thư mục `dataset/`:
 
@@ -41,7 +50,7 @@ Thông tin nhanh đã kiểm tra:
 - Geolocation: 1,000,163 dòng.
 - Khoảng thời gian đơn hàng: từ 2016-09-04 đến 2018-10-17.
 
-## 3. Cấu trúc dự án
+## 4. Cấu trúc dự án
 
 ```text
 .
@@ -58,7 +67,7 @@ Thông tin nhanh đã kiểm tra:
 └── src/                         # ETL, OLAP, ML và cấu hình
 ```
 
-## 4. Cài đặt
+## 5. Cài đặt
 
 Khuyến nghị dùng môi trường ảo `.venv312` đã tạo trong project:
 
@@ -77,7 +86,7 @@ pip install -r requirements.txt
 
 Lưu ý: nên dùng Python chính thức từ python.org hoặc conda. Python MSYS2/UCRT có thể khiến pip build pandas/numpy từ source và phát sinh lỗi SSL/cmake.
 
-## 5. Cấu hình database
+## 6. Cấu hình database
 
 Dự án **không dùng SQLite** cho warehouse. Loader hỗ trợ PostgreSQL và SQL Server.
 
@@ -106,7 +115,7 @@ OLIST_DB_PASSWORD=YourStrongPassword
 OLIST_DB_DRIVER=ODBC Driver 17 for SQL Server
 ```
 
-## 6. Chạy pipeline
+## 7. Chạy pipeline
 
 Tạo processed data và star schema CSV:
 
@@ -132,7 +141,7 @@ Train mô hình classification:
 python scripts/train_bad_review_model.py
 ```
 
-## 7. Chạy ứng dụng
+## 8. Chạy ứng dụng
 
 API:
 
@@ -146,7 +155,7 @@ Streamlit:
 streamlit run app/Home.py
 ```
 
-## 8. Bài toán classification
+## 9. Bài toán classification
 
 Mô hình dự đoán `bad_review`:
 
@@ -163,7 +172,7 @@ Feature chính:
 - Delivery days, delay days, delayed flag.
 - Tháng mua hàng và thứ trong tuần.
 
-## 9. Data warehouse và Iceberg Cube
+## 10. Data warehouse và Iceberg Cube
 
 Star schema:
 
@@ -182,7 +191,7 @@ Iceberg Cube được tính theo các chủ đề:
 - Mức độ hài lòng theo phương thức thanh toán, nhóm trả góp và nhóm review.
 - Luồng giao dịch theo bang khách hàng, bang seller và nhóm review.
 
-## 10. Tài liệu
+## 11. Tài liệu
 
 - Checklist công việc: `docs/olist_project_tasks.md`
 - Hướng dẫn database: `docs/database_setup.md`
